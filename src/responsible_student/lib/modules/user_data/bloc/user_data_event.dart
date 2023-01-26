@@ -31,3 +31,15 @@ class UserDataSetShouldLogInEvent extends UserDataEvent {
 class UserDataSetShouldNotLogInEvent extends UserDataEvent {
   const UserDataSetShouldNotLogInEvent();
 }
+
+class UserDataAddOrUpdateTask extends UserDataEvent {
+  final Task task;
+
+  UserDataAddOrUpdateTask(this.task);
+}
+
+class UserDataDeleteTask extends UserDataEvent {
+  final Task task;
+
+  UserDataDeleteTask(this.task);
+}

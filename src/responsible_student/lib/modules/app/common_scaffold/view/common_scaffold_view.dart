@@ -13,11 +13,6 @@ class UserHeaderView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    print('Bum');
-    try {
-      print(BlocProvider.of<UserDataBloc>(context).state);
-      print(RepositoryProvider.of<AuthService>(context).getCurrentUser());
-    } catch (ex) {}
     return BlocBuilder<UserDataBloc, UserDataState>(
       builder: ((context, state) => Scaffold(
             appBar: AppBar(
@@ -28,8 +23,7 @@ class UserHeaderView extends StatelessWidget {
                         onPressed: () {
                           BlocProvider.of<UserDataBloc>(context)
                               .add(const UserDataSetShouldLogInEvent());
-                          Navigator.of(context)
-                              .pushReplacement(LoginPage.route());
+                          Navigator.of(context).push(LoginPage.route());
                         },
                         child: const Text('Log in'),
                       )

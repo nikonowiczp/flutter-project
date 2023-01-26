@@ -1,5 +1,6 @@
 import 'package:equatable/equatable.dart';
 import 'package:json_annotation/json_annotation.dart';
+import 'package:uuid/uuid.dart';
 part 'task.g.dart';
 
 @JsonSerializable()
@@ -19,6 +20,9 @@ class Task extends Equatable {
       [id, deadline, hours, hoursDone, hoursPerReminder, name, nextReminder];
 
   factory Task.fromJson(Map<String, dynamic> json) => _$TaskFromJson(json);
-
+  factory Task.newTask() {
+    var uuid = Uuid();
+    return Task(uuid.v1(), DateTime.now(), 0, 0, 0, '', DateTime.now());
+  }
   Map<String, dynamic> toJson() => _$TaskToJson(this);
 }

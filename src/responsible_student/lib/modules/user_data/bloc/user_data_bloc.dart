@@ -5,6 +5,7 @@ import 'package:hydrated_bloc/hydrated_bloc.dart';
 import 'package:responsible_student/modules/auth/auth_service/models/user_entity.dart';
 import 'package:responsible_student/modules/auth/auth_service/service/auth_service.dart';
 import 'package:responsible_student/modules/tasks/models/task.dart';
+import 'package:rxdart/rxdart.dart';
 
 part 'user_data_event.dart';
 part 'user_data_state.dart';
@@ -17,12 +18,16 @@ class UserDataBloc extends HydratedBloc<UserDataEvent, UserDataState> {
     on<UserDataLoggedInEvent>(_onUserDataLoggedInEvent);
     on<UserDataLoggedOutEvent>(_onUserDataLoggedOutEvent);
     on<UserDataUpdateTasksEvent>(_onUserDataUpdateTasksEvent);
+    on<UserDataAddOrUpdateTask>(_onUserDataAddOrUpdateTask);
+    on<UserDataDeleteTask>(_onUserDataDeleteTask);
+
     on<UserDataSetShouldLogInEvent>((event, emit) {
       emit(state.copyWith(shouldBeLoggedIn: true));
     });
     on<UserDataSetShouldNotLogInEvent>((event, emit) {
       emit(state.copyWith(shouldBeLoggedIn: false));
     });
+
     print('Constructor was called');
     emit(state.copyWith(entity: _authService.getCurrentUser()));
   }
@@ -65,6 +70,26 @@ class UserDataBloc extends HydratedBloc<UserDataEvent, UserDataState> {
       UserDataUpdateTasksEvent event, Emitter<UserDataState> emit) {
     emit(state.copyWith(
         entity: _authService.getCurrentUser(), isLoggedIn: true));
+  }
+
+  _onUserDataAddOrUpdateTask(
+      UserDataAddOrUpdateTask event, Emitter<UserDataState> emit) {
+    print('Add or update task');
+    var newMap = Map<String, Task>.of(state.tasks);
+
+    if (newMap.containsKey(event.task.id)) {
+      newMap.update(event.task.id, (value) => event.task);
+    } else {
+      newMap[event.task.id] = event.task;
+    }
+    emit(state.copyWith(tasks: newMap));
+  }
+
+  _onUserDataDeleteTask(UserDataDeleteTask event, Emitter<UserDataState> emit) {
+    var newMap = Map<String, Task>.of(state.tasks);
+
+    newMap.remove(event.task.id);
+    emit(state.copyWith(tasks: newMap));
   }
 
   @override
