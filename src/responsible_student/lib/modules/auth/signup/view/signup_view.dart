@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:responsible_student/modules/app/homePage/homePage_view.dart';
+import 'package:responsible_student/modules/app/home_page/home_page_view.dart';
 import 'package:responsible_student/modules/auth/signup/bloc/signup_bloc.dart';
+import 'package:responsible_student/modules/user_data/bloc/user_data_bloc.dart';
 
 class SignUpView extends StatelessWidget {
   const SignUpView({super.key});
@@ -11,6 +12,8 @@ class SignUpView extends StatelessWidget {
     return BlocListener<SignupBloc, SignupState>(
       listener: (context, state) {
         if (state.status == SignupStatus.success) {
+          BlocProvider.of<UserDataBloc>(context)
+              .add(const UserDataLoggedInEvent());
           Navigator.of(context).pushReplacement(HomePage.route());
         }
         if (state.status == SignupStatus.failure) {

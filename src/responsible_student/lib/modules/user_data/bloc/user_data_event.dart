@@ -23,3 +23,11 @@ class UserDataUpdateTasksEvent extends UserDataEvent {
   final List<Task> tasks;
   const UserDataUpdateTasksEvent(this.tasks);
 }
+
+class UserDataSetShouldLogInEvent extends UserDataEvent {
+  const UserDataSetShouldLogInEvent();
+}
+
+class UserDataSetShouldNotLogInEvent extends UserDataEvent {
+  const UserDataSetShouldNotLogInEvent();
+}

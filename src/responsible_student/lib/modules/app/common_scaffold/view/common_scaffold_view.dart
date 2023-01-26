@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:responsible_student/modules/app/common_scaffold/bloc/common_scaffold_bloc.dart';
+import 'package:responsible_student/modules/auth/auth_service/service/auth_service.dart';
 import 'package:responsible_student/modules/auth/login/bloc/login_bloc.dart';
 import 'package:responsible_student/modules/auth/login/view/login_page.dart';
+import 'package:responsible_student/modules/user_data/bloc/user_data_bloc.dart';
 
 class UserHeaderView extends StatelessWidget {
   const UserHeaderView({super.key, required this.child, required this.title});
@@ -11,43 +13,47 @@ class UserHeaderView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocListener<CommomScaffoldBloc, CommonScaffoldState>(
-      listener: (context, state) {},
-      child: Scaffold(
-        appBar: AppBar(
-          title: Text(title),
-          actions:
-              BlocProvider.of<CommomScaffoldBloc>(context).state.email == ''
+    print('Bum');
+    try {
+      print(BlocProvider.of<UserDataBloc>(context).state);
+      print(RepositoryProvider.of<AuthService>(context).getCurrentUser());
+    } catch (ex) {}
+    return BlocBuilder<UserDataBloc, UserDataState>(
+      builder: ((context, state) => Scaffold(
+            appBar: AppBar(
+              title: Text(title),
+              actions: state.entity.email == ''
                   ? <Widget>[
                       TextButton(
                         onPressed: () {
-                          // context
-                          //     .read<CommomScaffoldBloc>()
-                          //     .add(const UserLogInButtonPressedEvent());
+                          BlocProvider.of<UserDataBloc>(context)
+                              .add(const UserDataSetShouldLogInEvent());
+                          Navigator.of(context)
+                              .pushReplacement(LoginPage.route());
                         },
                         child: const Text('Log in'),
                       )
                     ]
                   : <Widget>[
                       Center(
-                        child: Text(BlocProvider.of<CommomScaffoldBloc>(context)
-                            .state
-                            .email),
+                        child: Text(state.entity.email),
                       ),
                       TextButton(
                         onPressed: () {
-                          // BlocProvider.of<CommomScaffoldBloc>(context)
-                          //     .add(const UserLogOutButtonPressedEvent());
+                          BlocProvider.of<UserDataBloc>(context)
+                              .add(const UserDataLoggedOutEvent());
+                          Navigator.of(context)
+                              .pushReplacement(LoginPage.route());
                         },
                         child: const Text('Log out'),
                       )
                     ],
-          flexibleSpace: Container(
-            color: Colors.orange,
-          ),
-        ),
-        body: child,
-      ),
+              flexibleSpace: Container(
+                color: Colors.orange,
+              ),
+            ),
+            body: child,
+          )),
     );
   }
 }

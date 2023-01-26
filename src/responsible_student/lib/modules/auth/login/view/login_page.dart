@@ -1,3 +1,4 @@
+import 'package:responsible_student/modules/auth/auth_service/service/auth_service.dart';
 import 'package:responsible_student/modules/auth/auth_service/service/firebase_auth_service.dart';
 import 'package:responsible_student/modules/auth/login/bloc/login_bloc.dart';
 import 'package:responsible_student/modules/auth/login/view/login_view.dart';
@@ -16,8 +17,9 @@ class LoginPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
+      lazy: false,
       create: (context) => LoginBloc(
-        authService: context.read<FirebaseAuthService>(),
+        authService: RepositoryProvider.of<AuthService>(context),
       ),
       child: const LoginView(),
     );

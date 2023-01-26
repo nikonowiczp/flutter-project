@@ -1,5 +1,9 @@
 import 'package:equatable/equatable.dart';
+import 'package:json_annotation/json_annotation.dart';
 
+part 'user_entity.g.dart';
+
+@JsonSerializable()
 class UserEntity extends Equatable {
   const UserEntity({
     required this.id,
@@ -15,21 +19,24 @@ class UserEntity extends Equatable {
   final String email;
   final String imageUrl;
 
-  factory UserEntity.fromJson(Map<String, dynamic> json) => UserEntity(
-        id: json['id'] ?? "",
-        firstName: json['firstName'] ?? "",
-        lastName: json['lastName'] ?? "",
-        email: json['email'] ?? "",
-        imageUrl: json['imageUrl'] ?? "",
-      );
+  factory UserEntity.fromJson(Map<String, dynamic> json) =>
+      _$UserEntityFromJson(json);
+  // UserEntity(
+  //       id: json['id'] ?? "",
+  //       firstName: json['firstName'] ?? "",
+  //       lastName: json['lastName'] ?? "",
+  //       email: json['email'] ?? "",
+  //       imageUrl: json['imageUrl'] ?? "",
+  //     );
 
-  Map<String, dynamic> toJson() => <String, dynamic>{
-        'id': id,
-        'firstName': firstName,
-        'lastName': lastName,
-        'email': email,
-        'imageUrl': imageUrl,
-      };
+  Map<String, dynamic> toJson() => _$UserEntityToJson(this);
+  // <String, dynamic>{
+  //       'id': id,
+  //       'firstName': firstName,
+  //       'lastName': lastName,
+  //       'email': email,
+  //       'imageUrl': imageUrl,
+  //     };
   factory UserEntity.empty() => const UserEntity(
         id: "",
         firstName: "",

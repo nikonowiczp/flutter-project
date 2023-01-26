@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:responsible_student/modules/app/homePage/homePage_view.dart';
+import 'package:responsible_student/modules/app/home_page/home_page_view.dart';
 import 'package:responsible_student/modules/auth/login/bloc/login_bloc.dart';
 import 'package:responsible_student/modules/auth/signup/view/signup_page.dart';
+import 'package:responsible_student/modules/user_data/bloc/user_data_bloc.dart';
 
 class LoginView extends StatelessWidget {
   const LoginView({super.key});
@@ -10,20 +11,28 @@ class LoginView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocListener<LoginBloc, LoginState>(
-      listener: (context, state) {
-        if (state.status == LoginStatus.success) {
-          Navigator.of(context).pushReplacement(HomePage.route());
-        }
-        if (state.status == LoginStatus.failure) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(state.message),
-            ),
-          );
-        }
-      },
-      child: const _LoginForm(),
-    );
+        listener: (context, state) {
+          if (state.status == LoginStatus.success) {
+            BlocProvider.of<UserDataBloc>(context)
+                .add(const UserDataLoggedInEvent());
+            Navigator.of(context).pushReplacement(HomePage.route());
+          }
+          if (state.status == LoginStatus.failure) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text(state.message),
+              ),
+            );
+          }
+        },
+        child: BlocListener<UserDataBloc, UserDataState>(
+          listener: (context, userDataState) {
+            if (userDataState.shouldBeLoggedIn && !userDataState.isLoggedIn) {
+              Navigator.of(context).pushReplacement(HomePage.route());
+            }
+          },
+          child: const _LoginForm(),
+        ));
   }
 }
 
