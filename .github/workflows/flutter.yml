@@ -28,7 +28,7 @@ jobs:
         id: changed-files
         uses: tj-actions/changed-files@v19
         with:
-          files: src/mobile/**/*
+          files: src/responsible_student/**/*
 
       - name: Set modified flag
         id: check_files
@@ -90,38 +90,38 @@ jobs:
           channel: "stable"
 
       - name: Install dependencies
-        working-directory: ./src/mobile
+        working-directory: ./src/responsible_student
         run: flutter pub get
 
       # - name: Verify formatting
-      #   working-directory: ./mobile
+      #   working-directory: ./responsible_student
       #   run: flutter format --output=none --set-exit-if-changed .
 
       - name: Analyze project source
-        working-directory: ./src/mobile
+        working-directory: ./src/responsible_student
         run: flutter analyze --verbose
 
       # Enable when there are tests
       # - name: Run tests
-      #   working-directory: ./mobile
+      #   working-directory: ./responsible_student
       #   run: flutter test
 
       - name: Build app
-        working-directory: ./src/mobile
+        working-directory: ./src/responsible_student
         run: flutter build apk --verbose --flavor tst -t lib/main_test.dart --build-name 1.0.${{ github.run_number }} --build-number ${{ github.run_number }}
 
       - uses: actions/upload-artifact@v3
         with:
           name: app-release.apk
-          path: src/mobile/build/app/outputs/flutter-apk/app-tst-release.apk
+          path: src/responsible_student/build/app/outputs/flutter-apk/app-tst-release.apk
 
       - name: Upload artifact to App Center
         uses: wzieba/AppCenter-Github-Action@v1
         with:
-          appName: PiotrRogulski/HelpPets-1
+          appName: nikonowiczp/Responsible-Student
           token: ${{ secrets.APP_CENTER_TOKEN_ANDROID }}
           group: Testers
-          file: src/mobile/build/app/outputs/flutter-apk/app-tst-release.apk
+          file: src/responsible_student/build/app/outputs/flutter-apk/app-tst-release.apk
           buildNumber: ${{ github.run_number }}
           notifyTesters: true
           debug: false
