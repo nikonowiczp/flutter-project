@@ -76,7 +76,7 @@ jobs:
 
       - name: Build app
         working-directory: ./src/responsible_student
-        run: flutter build --verbose --build-name 1.0.${{ github.run_number }} --build-number ${{ github.run_number }}
+        run: flutter build --verbose
 
       - uses: actions/upload-artifact@v3
         with:
