@@ -89,7 +89,8 @@ class TaskEditState extends Equatable {
         double.parse(hoursDone.toStringAsFixed(1)),
         double.parse(hoursPerReminder.toStringAsFixed(1)),
         name,
-        nextReminder);
+        nextReminder,
+        DateTime.now());
   }
 
   bool canSubmit() {

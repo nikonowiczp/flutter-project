@@ -13,7 +13,7 @@ class SignUpView extends StatelessWidget {
       listener: (context, state) {
         if (state.status == SignupStatus.success) {
           BlocProvider.of<UserDataBloc>(context)
-              .add(const UserDataLoggedInEvent());
+              .add(const UserDataLoggedInEvent(true));
           Navigator.of(context).pushReplacement(HomePage.route());
         }
         if (state.status == SignupStatus.failure) {

@@ -48,6 +48,7 @@ dependencies:
   rxdart: ^0.27.3
   tuple: ^2.0.1
   cloud_firestore: ^4.3.1
+  flutter_local_notifications: ^13.0.0
 dev_dependencies:
   flutter_test:
     sdk: flutter

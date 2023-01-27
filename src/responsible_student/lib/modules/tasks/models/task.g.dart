@@ -14,6 +14,7 @@ Task _$TaskFromJson(Map<String, dynamic> json) => Task(
       (json['hoursPerReminder'] as num).toDouble(),
       json['name'] as String,
       DateTime.parse(json['nextReminder'] as String),
+      DateTime.parse(json['dateModified'] as String),
     );
 
 Map<String, dynamic> _$TaskToJson(Task instance) => <String, dynamic>{
@@ -24,4 +25,5 @@ Map<String, dynamic> _$TaskToJson(Task instance) => <String, dynamic>{
       'hoursPerReminder': instance.hoursPerReminder,
       'name': instance.name,
       'nextReminder': instance.nextReminder.toIso8601String(),
+      'dateModified': instance.dateModified.toIso8601String(),
     };

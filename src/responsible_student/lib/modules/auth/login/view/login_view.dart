@@ -13,9 +13,48 @@ class LoginView extends StatelessWidget {
     return BlocListener<LoginBloc, LoginState>(
         listener: (context, state) {
           if (state.status == LoginStatus.success) {
-            BlocProvider.of<UserDataBloc>(context)
-                .add(const UserDataLoggedInEvent());
-            Navigator.of(context).pushReplacement(HomePage.route());
+            if (BlocProvider.of<UserDataBloc>(context).state.tasks.length > 0) {
+              showDialog(
+                  context: context,
+                  builder: (BuildContext context) {
+                    return AlertDialog(
+                      title: const Text('Basic dialog title'),
+                      content: const Text('Do you want to synchronize'
+                          ' data on your device with cloud? '
+                          ' If not, all of your local data will be lost'),
+                      actions: <Widget>[
+                        TextButton(
+                          style: TextButton.styleFrom(
+                            textStyle: Theme.of(context).textTheme.labelLarge,
+                          ),
+                          child: const Text('Lose data'),
+                          onPressed: () {
+                            BlocProvider.of<UserDataBloc>(context)
+                                .add(const UserDataLoggedInEvent(false));
+                            Navigator.of(context)
+                                .pushReplacement(HomePage.route());
+                          },
+                        ),
+                        TextButton(
+                          style: TextButton.styleFrom(
+                            textStyle: Theme.of(context).textTheme.labelLarge,
+                          ),
+                          child: const Text('Synchronize'),
+                          onPressed: () {
+                            BlocProvider.of<UserDataBloc>(context)
+                                .add(const UserDataLoggedInEvent(true));
+                            Navigator.of(context)
+                                .pushReplacement(HomePage.route());
+                          },
+                        ),
+                      ],
+                    );
+                  });
+            } else {
+              BlocProvider.of<UserDataBloc>(context)
+                  .add(const UserDataLoggedInEvent(true));
+              Navigator.of(context).pushReplacement(HomePage.route());
+            }
           }
           if (state.status == LoginStatus.failure) {
             ScaffoldMessenger.of(context).showSnackBar(

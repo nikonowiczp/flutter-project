@@ -21,22 +21,9 @@ class UserEntity extends Equatable {
 
   factory UserEntity.fromJson(Map<String, dynamic> json) =>
       _$UserEntityFromJson(json);
-  // UserEntity(
-  //       id: json['id'] ?? "",
-  //       firstName: json['firstName'] ?? "",
-  //       lastName: json['lastName'] ?? "",
-  //       email: json['email'] ?? "",
-  //       imageUrl: json['imageUrl'] ?? "",
-  //     );
 
   Map<String, dynamic> toJson() => _$UserEntityToJson(this);
-  // <String, dynamic>{
-  //       'id': id,
-  //       'firstName': firstName,
-  //       'lastName': lastName,
-  //       'email': email,
-  //       'imageUrl': imageUrl,
-  //     };
+
   factory UserEntity.empty() => const UserEntity(
         id: "",
         firstName: "",

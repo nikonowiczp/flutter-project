@@ -1,4 +1,6 @@
 import 'dart:convert';
+import 'dart:math';
+import 'dart:ui';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:equatable/equatable.dart';
@@ -21,6 +23,7 @@ class UserDataBloc extends HydratedBloc<UserDataEvent, UserDataState> {
     on<UserDataUpdateTasksEvent>(_onUserDataUpdateTasksEvent);
     on<UserDataAddOrUpdateTask>(_onUserDataAddOrUpdateTask);
     on<UserDataDeleteTask>(_onUserDataDeleteTask);
+    on<UserDataSynchronize>(_onUserDataSynchronize);
 
     on<UserDataSetShouldLogInEvent>((event, emit) {
       emit(state.copyWith(shouldBeLoggedIn: true));
@@ -30,48 +33,32 @@ class UserDataBloc extends HydratedBloc<UserDataEvent, UserDataState> {
     });
     print('Constructor was called');
     emit(state.copyWith(entity: _authService.getCurrentUser()));
-    if (state.isLoggedIn) _synchronizeTasksWithFirestore();
+    if (state.isLoggedIn) add(UserDataSynchronize());
   }
   final AuthService _authService;
   final FirebaseFirestore _firestore;
 
-  _synchronizeTasksWithFirestore() async {
-    print('_synchronizeTasksWithFirestore');
-    var userInfo = await _firestore
-        .collection('/task')
-        .where('userUid', isEqualTo: '4KPXfRtPh3Xqie5RiRkqr1iZ5H13')
-        .get()
-        .then((value) => value.docs.forEach((element) {
-              print(element.data());
-            }));
-    print('After query');
-  }
-
   _onUserDataAddTasksEvent(
       UserDataAddTasksEvent event, Emitter<UserDataState> emit) {
     var newMap = Map<String, Task>.of(state.tasks);
-    print('_onUserDataAddTasksEvent');
 
     for (var item in event.tasks) {
       if (!newMap.containsKey(item.id)) {
         newMap[item.id] = item;
-        print('Added item to items');
-        print(item);
       }
     }
-    print('Old map count');
-    print(state.tasks.entries.length);
-    print('New items map count');
-    print(newMap.entries.length);
     emit(state.copyWith(tasks: newMap));
   }
 
   _onUserDataLoggedInEvent(
       UserDataLoggedInEvent event, Emitter<UserDataState> emit) {
-    emit(state.copyWith(
-        entity: _authService.getCurrentUser(),
-        isLoggedIn: true,
-        shouldBeLoggedIn: true));
+    emit(
+      state.copyWith(
+          entity: _authService.getCurrentUser(),
+          isLoggedIn: true,
+          shouldBeLoggedIn: true),
+    );
+    add(UserDataSynchronize(deleteLocal: !event.synchronize));
   }
 
   _onUserDataLoggedOutEvent(
@@ -97,14 +84,85 @@ class UserDataBloc extends HydratedBloc<UserDataEvent, UserDataState> {
     } else {
       newMap[event.task.id] = event.task;
     }
-    emit(state.copyWith(tasks: newMap));
+    if (state.isLoggedIn) {
+      add(UserDataSynchronize(newMap: newMap));
+    } else {
+      emit(state.copyWith(tasks: newMap));
+    }
   }
 
   _onUserDataDeleteTask(UserDataDeleteTask event, Emitter<UserDataState> emit) {
     var newMap = Map<String, Task>.of(state.tasks);
+    if (state.isLoggedIn) {
+      add(UserDataSynchronize(deletedTask: event.task));
+    } else {
+      newMap.remove(event.task.id);
+      emit(state.copyWith(tasks: newMap));
+    }
+  }
 
-    newMap.remove(event.task.id);
-    emit(state.copyWith(tasks: newMap));
+  _onUserDataSynchronize(UserDataSynchronize event, Emitter<UserDataState> emit,
+      {bool isFirstTime = true}) async {
+    if (state.entity.id.isEmpty) {}
+    Map<String, Task> oldTasks = event.deleteLocal
+        ? {}
+        : event.newMap == null
+            ? state.tasks
+            : event.newMap!;
+    Map<String, Task> newTasks = {};
+    bool updateTasks = false;
+    bool didFindDocument = false;
+    DocumentReference tasks =
+        _firestore.collection('/task').doc(state.entity.id);
+    try {
+      await tasks.get().then((value) {
+        didFindDocument = true;
+        var data = value.data();
+        Map<String, dynamic> tasks = (data as Map<String, dynamic>)['tasks'];
+        for (var taskEntry in tasks.entries) {
+          Task task = Task.fromFirestoreJson(taskEntry.value);
+          print(task);
+          if (!oldTasks.containsKey(task.id)) {
+            newTasks[task.id] = task;
+          } else {
+            if (oldTasks[task.id]!.dateModified.isAfter(task.dateModified)) {
+              updateTasks = true;
+              newTasks[task.id] = oldTasks[task.id]!;
+            } else {
+              newTasks[task.id] = task;
+            }
+          }
+        }
+      });
+    } catch (e) {
+      print(e);
+    }
+
+    if ((!didFindDocument) && isFirstTime) {
+      print('Did not find document');
+      await _onUserDataSynchronize(event, emit, isFirstTime: false);
+      return;
+    }
+    for (var taskEntry in oldTasks.entries) {
+      if (!newTasks.containsKey(taskEntry.key)) {
+        newTasks[taskEntry.value.id] = taskEntry.value;
+        updateTasks = true;
+      }
+    }
+    if (event.deletedTask != null &&
+        newTasks.containsKey(event.deletedTask!.id)) {
+      newTasks.remove(event.deletedTask!.id);
+    }
+
+    if (updateTasks) {
+      Map<String, dynamic> taskData = new Map<String, dynamic>();
+      for (var task in newTasks.values) {
+        taskData[task.id] = task.toFirestoreJson();
+      }
+      await tasks.set({'tasks': taskData});
+    }
+
+    emit(state.copyWith(tasks: newTasks));
   }
 
   @override

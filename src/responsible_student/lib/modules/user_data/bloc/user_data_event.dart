@@ -5,7 +5,8 @@ abstract class UserDataEvent {
 }
 
 class UserDataLoggedInEvent extends UserDataEvent {
-  const UserDataLoggedInEvent();
+  final bool synchronize;
+  const UserDataLoggedInEvent(this.synchronize);
 }
 
 class UserDataLoggedOutEvent extends UserDataEvent {
@@ -42,4 +43,12 @@ class UserDataDeleteTask extends UserDataEvent {
   final Task task;
 
   UserDataDeleteTask(this.task);
+}
+
+class UserDataSynchronize extends UserDataEvent {
+  final bool deleteLocal;
+  final Task? deletedTask;
+  final Map<String, Task>? newMap;
+  UserDataSynchronize(
+      {this.deleteLocal = false, this.deletedTask, this.newMap});
 }
