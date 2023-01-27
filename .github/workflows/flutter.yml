@@ -8,8 +8,6 @@ on:
 jobs:
   setup:
     runs-on: ${{ matrix.os }}
-    if: ${{ github.event_name == 'workflow_dispatch' || needs.check.outputs.run_job == 'true' }}
-
     strategy:
       matrix:
         os: [ubuntu-latest]
@@ -35,7 +33,6 @@ jobs:
   build:
     runs-on: ${{ matrix.os }}
     needs: [setup]
-    if: ${{ github.event_name == 'workflow_dispatch' || needs.check.outputs.run_job == 'true' }}
 
     strategy:
       matrix:
