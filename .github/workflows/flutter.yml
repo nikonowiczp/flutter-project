@@ -76,7 +76,7 @@ jobs:
 
       - name: Build app
         working-directory: ./src/responsible_student
-        run: flutter build apk --verbose --flavor tst --build-name 1.0.${{ github.run_number }} --build-number ${{ github.run_number }}
+        run: flutter build apk --verbose --build-name 1.0.${{ github.run_number }} --build-number ${{ github.run_number }}
 
       - uses: actions/upload-artifact@v3
         with:
@@ -88,9 +88,6 @@ jobs:
         with:
           appName: nikonowiczp/Responsible-Student
           token: ${{ secrets.APP_CENTER_TOKEN_ANDROID }}
-          group: Testers
           file: src/responsible_student/build/app/outputs/flutter-apk/app-tst-release.apk
           buildNumber: ${{ github.run_number }}
-          notifyTesters: true
-          debug: false
-          gitReleaseNotes: true
+          debug: true
