@@ -70,11 +70,9 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
   Future<void> _handleLoginWithGmail(
       LoginWithGmailEvent event, Emitter<LoginState> emit) async {
     try {
-      var credential = await _authService.signInWithGoogle();
+      await _authService.signInWithGoogle();
       emit(state.copyWith(message: 'Success', status: LoginStatus.success));
     } catch (e) {
-      print('Login with gmail error');
-      print(e);
       emit(state.copyWith(message: e.toString(), status: LoginStatus.failure));
     }
   }
@@ -82,11 +80,9 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
   Future<void> _onLoginWithFacebookEvent(
       LoginWithFacebookEvent event, Emitter<LoginState> emit) async {
     try {
-      var credential = await _authService.signInWithFacebook();
+      await _authService.signInWithFacebook();
       emit(state.copyWith(message: 'Success', status: LoginStatus.success));
     } catch (e) {
-      print('Login with facebook error');
-      print(e);
       emit(state.copyWith(message: e.toString(), status: LoginStatus.failure));
     }
   }

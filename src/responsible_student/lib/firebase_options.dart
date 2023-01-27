@@ -67,7 +67,10 @@ class DefaultFirebaseOptions {
     messagingSenderId: '386793433837',
     projectId: 'responsible-student',
     storageBucket: 'responsible-student.appspot.com',
-    iosClientId: '386793433837-pbkv670tqdurfk7dkbh80kpctgbbjuhc.apps.googleusercontent.com',
+    androidClientId:
+        '386793433837-j11n6eggk0q2oidtbvnmdlgjdulttnv3.apps.googleusercontent.com',
+    iosClientId:
+        '386793433837-pbkv670tqdurfk7dkbh80kpctgbbjuhc.apps.googleusercontent.com',
     iosBundleId: 'com.example.responsibleStudent',
   );
 
@@ -77,7 +80,10 @@ class DefaultFirebaseOptions {
     messagingSenderId: '386793433837',
     projectId: 'responsible-student',
     storageBucket: 'responsible-student.appspot.com',
-    iosClientId: '386793433837-pbkv670tqdurfk7dkbh80kpctgbbjuhc.apps.googleusercontent.com',
+    androidClientId:
+        '386793433837-j11n6eggk0q2oidtbvnmdlgjdulttnv3.apps.googleusercontent.com',
+    iosClientId:
+        '386793433837-pbkv670tqdurfk7dkbh80kpctgbbjuhc.apps.googleusercontent.com',
     iosBundleId: 'com.example.responsibleStudent',
   );
 }
