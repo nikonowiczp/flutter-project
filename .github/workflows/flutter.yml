@@ -34,7 +34,7 @@ jobs:
 
   build:
     runs-on: ${{ matrix.os }}
-    needs: [check, setup]
+    needs: [setup]
     if: ${{ github.event_name == 'workflow_dispatch' || needs.check.outputs.run_job == 'true' }}
 
     strategy:
