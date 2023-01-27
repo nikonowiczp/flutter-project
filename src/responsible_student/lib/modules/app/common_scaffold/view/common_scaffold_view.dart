@@ -13,6 +13,7 @@ class UserHeaderView extends StatelessWidget {
     return BlocBuilder<UserDataBloc, UserDataState>(
       builder: ((context, state) => Scaffold(
             appBar: AppBar(
+              automaticallyImplyLeading: false,
               title: Text(title),
               actions: state.entity.email == ''
                   ? <Widget>[

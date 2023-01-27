@@ -1,13 +1,11 @@
-import 'dart:ui';
+// ignore_for_file: camel_case_types, unused_local_variable, empty_catches
 
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 import 'package:responsible_student/modules/app/home_page/home_page_view.dart';
 import 'package:responsible_student/modules/tasks/edit/bloc/task_edit_bloc.dart';
-import 'package:responsible_student/modules/tasks/models/task.dart';
 import 'package:responsible_student/modules/user_data/bloc/user_data_bloc.dart';
 
 class TaskEditView extends StatelessWidget {
@@ -53,12 +51,13 @@ class TaskEditView extends StatelessWidget {
           return Scaffold(
             body: Scaffold(
                 appBar: AppBar(
-                  title: Text('Modify task'),
+                  automaticallyImplyLeading: false,
+                  title: const Text('Modify task'),
                   actions: actions,
                 ),
                 body: Padding(
-                  padding:
-                      EdgeInsets.only(left: 15, right: 15, top: 20, bottom: 20),
+                  padding: const EdgeInsets.only(
+                      left: 15, right: 15, top: 20, bottom: 20),
                   child: ListView(
                     children: [
                       _nameInput(
@@ -88,7 +87,7 @@ class TaskEditView extends StatelessWidget {
 }
 
 class _deadlineInput extends StatelessWidget {
-  _deadlineInput({super.key, required this.bloc, required this.error});
+  const _deadlineInput({required this.bloc, required this.error});
   final String error;
   bool _hasError() {
     return error != '';
@@ -97,7 +96,6 @@ class _deadlineInput extends StatelessWidget {
   final TaskEditBloc bloc;
   @override
   Widget build(BuildContext context) {
-    print(error);
     return Column(children: [
       TextField(
         controller: bloc.deadline,
@@ -139,7 +137,7 @@ class _deadlineInput extends StatelessWidget {
 }
 
 class _nextReminderInput extends StatelessWidget {
-  _nextReminderInput({super.key, required this.bloc, required this.error});
+  const _nextReminderInput({required this.bloc, required this.error});
   final String error;
   bool _hasError() {
     return error != '';
@@ -189,7 +187,7 @@ class _nextReminderInput extends StatelessWidget {
 }
 
 class _hoursInput extends StatelessWidget {
-  _hoursInput({super.key, required this.bloc, required this.error});
+  const _hoursInput({required this.bloc, required this.error});
   final String error;
   bool _hasError() {
     return error != '';
@@ -198,7 +196,6 @@ class _hoursInput extends StatelessWidget {
   final TaskEditBloc bloc;
   @override
   Widget build(BuildContext context) {
-    print(error);
     return Column(children: [
       TextField(
         controller: bloc.hours,
@@ -242,7 +239,7 @@ class _hoursInput extends StatelessWidget {
 }
 
 class _hoursDoneInput extends StatelessWidget {
-  _hoursDoneInput({super.key, required this.bloc, required this.error});
+  const _hoursDoneInput({required this.bloc, required this.error});
   final String error;
   bool _hasError() {
     return error != '';
@@ -251,12 +248,10 @@ class _hoursDoneInput extends StatelessWidget {
   final TaskEditBloc bloc;
   @override
   Widget build(BuildContext context) {
-    print(error);
     return Column(children: [
       TextField(
         controller: bloc.hoursDone,
         onChanged: (value) {
-          print(value);
           bloc.add(TaskEditHoursDoneChanged(double.parse(value)));
         },
         keyboardType: TextInputType.number,
@@ -296,8 +291,7 @@ class _hoursDoneInput extends StatelessWidget {
 }
 
 class _hoursPerReminderDoneInput extends StatelessWidget {
-  _hoursPerReminderDoneInput(
-      {super.key, required this.bloc, required this.error});
+  const _hoursPerReminderDoneInput({required this.bloc, required this.error});
   final String error;
   bool _hasError() {
     return error != '';
@@ -306,12 +300,10 @@ class _hoursPerReminderDoneInput extends StatelessWidget {
   final TaskEditBloc bloc;
   @override
   Widget build(BuildContext context) {
-    print(error);
     return Column(children: [
       TextField(
         controller: bloc.hoursPerReminder,
         onChanged: (value) {
-          print(value);
           bloc.add(TaskEditHoursPerReminderChanged(double.parse(value)));
         },
         keyboardType: TextInputType.number,
@@ -351,7 +343,7 @@ class _hoursPerReminderDoneInput extends StatelessWidget {
 }
 
 class _nameInput extends StatelessWidget {
-  _nameInput({super.key, required this.bloc, required this.error});
+  const _nameInput({required this.bloc, required this.error});
   final String error;
   bool _hasError() {
     return error != '';
@@ -360,7 +352,6 @@ class _nameInput extends StatelessWidget {
   final TaskEditBloc bloc;
   @override
   Widget build(BuildContext context) {
-    print(error);
     return Column(children: [
       TextField(
         controller: bloc.name,

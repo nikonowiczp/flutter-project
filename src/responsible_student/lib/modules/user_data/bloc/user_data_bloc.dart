@@ -1,26 +1,22 @@
-import 'dart:convert';
-import 'dart:math';
-import 'dart:ui';
+// ignore_for_file: empty_catches
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:equatable/equatable.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';
 import 'package:responsible_student/modules/auth/auth_service/models/user_entity.dart';
 import 'package:responsible_student/modules/auth/auth_service/service/auth_service.dart';
+import 'package:responsible_student/modules/local_notification/bloc/local_notification_bloc.dart';
 import 'package:responsible_student/modules/tasks/models/task.dart';
-import 'package:rxdart/rxdart.dart';
 
 part 'user_data_event.dart';
 part 'user_data_state.dart';
 
 class UserDataBloc extends HydratedBloc<UserDataEvent, UserDataState> {
-  UserDataBloc(this._authService, this._firestore)
+  UserDataBloc(this._authService, this._firestore, this._notificationBloc)
       : super(UserDataState(
             entity: UserEntity.empty(), tasks: const <String, Task>{})) {
-    on<UserDataAddTasksEvent>(_onUserDataAddTasksEvent);
     on<UserDataLoggedInEvent>(_onUserDataLoggedInEvent);
     on<UserDataLoggedOutEvent>(_onUserDataLoggedOutEvent);
-    on<UserDataUpdateTasksEvent>(_onUserDataUpdateTasksEvent);
     on<UserDataAddOrUpdateTask>(_onUserDataAddOrUpdateTask);
     on<UserDataDeleteTask>(_onUserDataDeleteTask);
     on<UserDataSynchronize>(_onUserDataSynchronize);
@@ -31,24 +27,12 @@ class UserDataBloc extends HydratedBloc<UserDataEvent, UserDataState> {
     on<UserDataSetShouldNotLogInEvent>((event, emit) {
       emit(state.copyWith(shouldBeLoggedIn: false, entity: UserEntity.empty()));
     });
-    print('Constructor was called');
-    emit(state.copyWith(entity: _authService.getCurrentUser()));
+    //emit(state.copyWith(entity: _authService.getCurrentUser()));
     if (state.isLoggedIn) add(UserDataSynchronize());
   }
   final AuthService _authService;
   final FirebaseFirestore _firestore;
-
-  _onUserDataAddTasksEvent(
-      UserDataAddTasksEvent event, Emitter<UserDataState> emit) {
-    var newMap = Map<String, Task>.of(state.tasks);
-
-    for (var item in event.tasks) {
-      if (!newMap.containsKey(item.id)) {
-        newMap[item.id] = item;
-      }
-    }
-    emit(state.copyWith(tasks: newMap));
-  }
+  final LocalNotificationBloc _notificationBloc;
 
   _onUserDataLoggedInEvent(
       UserDataLoggedInEvent event, Emitter<UserDataState> emit) {
@@ -68,15 +52,8 @@ class UserDataBloc extends HydratedBloc<UserDataEvent, UserDataState> {
         entity: _authService.getCurrentUser(), isLoggedIn: false));
   }
 
-  _onUserDataUpdateTasksEvent(
-      UserDataUpdateTasksEvent event, Emitter<UserDataState> emit) {
-    emit(state.copyWith(
-        entity: _authService.getCurrentUser(), isLoggedIn: true));
-  }
-
   _onUserDataAddOrUpdateTask(
       UserDataAddOrUpdateTask event, Emitter<UserDataState> emit) {
-    print('Add or update task');
     var newMap = Map<String, Task>.of(state.tasks);
 
     if (newMap.containsKey(event.task.id)) {
@@ -84,6 +61,7 @@ class UserDataBloc extends HydratedBloc<UserDataEvent, UserDataState> {
     } else {
       newMap[event.task.id] = event.task;
     }
+    _notificationBloc.add(LocalNotificationAddNotificationForTask(event.task));
     if (state.isLoggedIn) {
       add(UserDataSynchronize(newMap: newMap));
     } else {
@@ -93,6 +71,9 @@ class UserDataBloc extends HydratedBloc<UserDataEvent, UserDataState> {
 
   _onUserDataDeleteTask(UserDataDeleteTask event, Emitter<UserDataState> emit) {
     var newMap = Map<String, Task>.of(state.tasks);
+    _notificationBloc
+        .add(LocalNotificationDeleteNotificationForTask(event.task));
+
     if (state.isLoggedIn) {
       add(UserDataSynchronize(deletedTask: event.task));
     } else {
@@ -103,12 +84,16 @@ class UserDataBloc extends HydratedBloc<UserDataEvent, UserDataState> {
 
   _onUserDataSynchronize(UserDataSynchronize event, Emitter<UserDataState> emit,
       {bool isFirstTime = true}) async {
-    if (state.entity.id.isEmpty) {}
     Map<String, Task> oldTasks = event.deleteLocal
         ? {}
         : event.newMap == null
             ? state.tasks
             : event.newMap!;
+    if (event.deleteLocal) {
+      for (var task in state.tasks.values) {
+        _notificationBloc.add(LocalNotificationDeleteNotificationForTask(task));
+      }
+    }
     Map<String, Task> newTasks = {};
     bool updateTasks = false;
     bool didFindDocument = false;
@@ -121,7 +106,6 @@ class UserDataBloc extends HydratedBloc<UserDataEvent, UserDataState> {
         Map<String, dynamic> tasks = (data as Map<String, dynamic>)['tasks'];
         for (var taskEntry in tasks.entries) {
           Task task = Task.fromFirestoreJson(taskEntry.value);
-          print(task);
           if (!oldTasks.containsKey(task.id)) {
             newTasks[task.id] = task;
           } else {
@@ -129,17 +113,16 @@ class UserDataBloc extends HydratedBloc<UserDataEvent, UserDataState> {
               updateTasks = true;
               newTasks[task.id] = oldTasks[task.id]!;
             } else {
+              _notificationBloc
+                  .add(LocalNotificationAddNotificationForTask(task));
               newTasks[task.id] = task;
             }
           }
         }
       });
-    } catch (e) {
-      print(e);
-    }
+    } catch (e) {}
 
     if ((!didFindDocument) && isFirstTime) {
-      print('Did not find document');
       await _onUserDataSynchronize(event, emit, isFirstTime: false);
       return;
     }
@@ -155,7 +138,7 @@ class UserDataBloc extends HydratedBloc<UserDataEvent, UserDataState> {
     }
 
     if (updateTasks) {
-      Map<String, dynamic> taskData = new Map<String, dynamic>();
+      Map<String, dynamic> taskData = <String, dynamic>{};
       for (var task in newTasks.values) {
         taskData[task.id] = task.toFirestoreJson();
       }

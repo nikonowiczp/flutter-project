@@ -11,7 +11,7 @@ class SignupButtonPressedEvent extends SignupEvent {
 }
 
 class SignupEmailChangedEvent extends SignupEvent {
-  SignupEmailChangedEvent({required this.email});
+  const SignupEmailChangedEvent({required this.email});
 
   final String email;
 
@@ -20,7 +20,7 @@ class SignupEmailChangedEvent extends SignupEvent {
 }
 
 class SignupPasswordChangedEvent extends SignupEvent {
-  SignupPasswordChangedEvent({required this.password});
+  const SignupPasswordChangedEvent({required this.password});
 
   final String password;
 

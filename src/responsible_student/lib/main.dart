@@ -6,11 +6,10 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:responsible_student/modules/app/home_page/home_page_view.dart';
-import 'package:responsible_student/modules/auth/auth_service/models/user_entity.dart';
 import 'package:responsible_student/modules/auth/auth_service/service/auth_service.dart';
 import 'package:responsible_student/modules/auth/auth_service/service/firebase_auth_service.dart';
-import 'package:responsible_student/modules/auth/login/view/login_page.dart';
-import 'package:responsible_student/modules/auth/signup/view/signup_page.dart';
+import 'package:responsible_student/modules/local_notification/bloc/local_notification_bloc.dart';
+import 'package:responsible_student/modules/local_notification/service/local_notification_service.dart';
 import 'package:responsible_student/modules/user_data/bloc/user_data_bloc.dart';
 import 'firebase_options.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -25,6 +24,7 @@ void main() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
+  await LocalNoticeService().setup();
 
   runApp(const ResponsibleStudentApp());
 }
@@ -34,7 +34,6 @@ class ResponsibleStudentApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    var user = FirebaseAuth.instance.currentUser;
     return MultiRepositoryProvider(
         providers: [
           RepositoryProvider<AuthService>(
@@ -46,11 +45,14 @@ class ResponsibleStudentApp extends StatelessWidget {
         ],
         child: MultiBlocProvider(
             providers: [
+              BlocProvider<LocalNotificationBloc>(
+                  lazy: false, create: (context) => LocalNotificationBloc()),
               BlocProvider<UserDataBloc>(
                   lazy: false,
                   create: (context) => UserDataBloc(
                       RepositoryProvider.of<AuthService>(context),
-                      FirebaseFirestore.instance)),
+                      FirebaseFirestore.instance,
+                      BlocProvider.of<LocalNotificationBloc>(context))),
             ],
             child: const MaterialApp(
               title: 'Responsible Student',

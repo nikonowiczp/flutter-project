@@ -15,7 +15,7 @@ class Task extends Equatable {
   final DateTime nextReminder;
   final DateTime dateModified;
 
-  Task(this.id, this.deadline, this.hours, this.hoursDone,
+  const Task(this.id, this.deadline, this.hours, this.hoursDone,
       this.hoursPerReminder, this.name, this.nextReminder, this.dateModified);
   @override
   List<Object?> get props =>
@@ -23,7 +23,7 @@ class Task extends Equatable {
 
   factory Task.fromJson(Map<String, dynamic> json) => _$TaskFromJson(json);
   factory Task.newTask() {
-    var uuid = Uuid();
+    var uuid = const Uuid();
     return Task(uuid.v1(), DateTime.now(), 0, 0, 0, 'New Task', DateTime.now(),
         DateTime.now());
   }

@@ -1,4 +1,3 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:responsible_student/modules/tasks/edit/view/task_edit_page.dart';
@@ -9,9 +8,10 @@ class TaskPreview extends StatelessWidget {
 
   const TaskPreview({super.key, required this.task});
 
+  @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: EdgeInsets.only(left: 15, right: 15),
+      padding: const EdgeInsets.only(left: 15, right: 15),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: [
@@ -25,7 +25,7 @@ class TaskPreview extends StatelessWidget {
                 onPressed: () {
                   Navigator.pushReplacement(context, TaskEditPage.route(task));
                 },
-                child: Text('Details')),
+                child: const Text('Details')),
           )
         ],
       ),

@@ -18,7 +18,7 @@ class TaskEditPage extends StatelessWidget {
     return BlocProvider(
       lazy: false,
       create: (context) => TaskEditBloc(task),
-      child: TaskEditView(),
+      child: const TaskEditView(),
     );
   }
 }

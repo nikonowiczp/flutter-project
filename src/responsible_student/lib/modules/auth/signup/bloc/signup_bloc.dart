@@ -8,7 +8,7 @@ class SignupBloc extends Bloc<SignupEvent, SignupState> {
   SignupBloc({
     required AuthService authService,
   })  : _authService = authService,
-        super(SignupState()) {
+        super(const SignupState()) {
     on<SignupButtonPressedEvent>(_handleCreateAccountEvent);
     on<SignupEmailChangedEvent>(_handleSignupEmailChangedEvent);
     on<SignupPasswordChangedEvent>(_handleSignupPasswordChangedEvent);

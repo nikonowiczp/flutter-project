@@ -1,5 +1,4 @@
 import 'package:responsible_student/modules/auth/auth_service/service/auth_service.dart';
-import 'package:responsible_student/modules/auth/auth_service/service/firebase_auth_service.dart';
 import 'package:responsible_student/modules/auth/login/bloc/login_bloc.dart';
 import 'package:responsible_student/modules/auth/login/view/login_view.dart';
 import 'package:flutter/material.dart';

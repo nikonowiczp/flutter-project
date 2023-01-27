@@ -17,7 +17,7 @@ class TaskEditState extends Equatable {
   final String nextReminderError;
 
   final bool submissionSuccess;
-  TaskEditState({
+  const TaskEditState({
     this.deadlineError = '',
     this.hoursError = '',
     this.hoursDoneError = '',
@@ -34,7 +34,6 @@ class TaskEditState extends Equatable {
     this.submissionSuccess = false,
   });
   @override
-  // TODO: implement props
   List<Object?> get props => [
         id,
         deadline,

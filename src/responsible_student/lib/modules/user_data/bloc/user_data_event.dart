@@ -13,18 +13,6 @@ class UserDataLoggedOutEvent extends UserDataEvent {
   const UserDataLoggedOutEvent();
 }
 
-// Tasks provided are added to current tasks
-class UserDataAddTasksEvent extends UserDataEvent {
-  final List<Task> tasks;
-  const UserDataAddTasksEvent(this.tasks);
-}
-
-// All tasks are set to tasks provided
-class UserDataUpdateTasksEvent extends UserDataEvent {
-  final List<Task> tasks;
-  const UserDataUpdateTasksEvent(this.tasks);
-}
-
 class UserDataSetShouldLogInEvent extends UserDataEvent {
   const UserDataSetShouldLogInEvent();
 }

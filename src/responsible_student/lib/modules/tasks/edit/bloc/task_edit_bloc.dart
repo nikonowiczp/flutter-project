@@ -1,3 +1,5 @@
+// ignore_for_file: unused_import
+
 import 'dart:math';
 
 import 'package:equatable/equatable.dart';
@@ -161,7 +163,10 @@ class TaskEditBloc extends Bloc<TaskEditEvent, TaskEditState> {
 // All of those should be static,
 // so that there is no weird leftover state when checking for errors
   static String _getDeadlineError(DateTime deadline, DateTime nextReminder) {
-    if (deadline.isBefore(DateTime.now())) {
+    if (deadline.isBefore(DateTime.now()) &&
+        // I am sincerely sorry for this.
+        DateFormat.yMd().format(DateTime.now()) !=
+            DateFormat.yMd().format(nextReminder)) {
       return 'Choose date in the future';
     }
     return '';
@@ -201,10 +206,16 @@ class TaskEditBloc extends Bloc<TaskEditEvent, TaskEditState> {
 
   static String _getNextReminderError(
       DateTime nextReminder, DateTime deadline) {
-    if (DateTime.now().isAfter(nextReminder)) {
+    if (!DateTime.now().isAfter(nextReminder) &&
+        // I am sincerely sorry for this.
+        DateFormat.yMd().format(DateTime.now()) !=
+            DateFormat.yMd().format(nextReminder)) {
       return 'Choose date in the future';
     }
-    if (nextReminder.isAfter(deadline)) {
+    if (nextReminder.isAfter(deadline) &&
+        // I am sincerely sorry for this.
+        DateFormat.yMd().format(deadline) !=
+            DateFormat.yMd().format(nextReminder)) {
       return 'Next reminder can\'t occur after the deadline';
     }
     return '';
@@ -232,6 +243,7 @@ class TaskEditBloc extends Bloc<TaskEditEvent, TaskEditState> {
       calculatedNextReminder =
           nowOnlyDate.add(Duration(days: daysUntilNextReminder));
       return Tuple2<DateTime, String>(calculatedNextReminder, error);
+      // ignore: empty_catches
     } catch (e) {}
     return Tuple2<DateTime, String>(calculatedNextReminder, error);
   }

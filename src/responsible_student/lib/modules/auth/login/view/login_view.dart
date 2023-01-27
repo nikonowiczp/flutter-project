@@ -13,12 +13,12 @@ class LoginView extends StatelessWidget {
     return BlocListener<LoginBloc, LoginState>(
         listener: (context, state) {
           if (state.status == LoginStatus.success) {
-            if (BlocProvider.of<UserDataBloc>(context).state.tasks.length > 0) {
+            if (BlocProvider.of<UserDataBloc>(context).state.tasks.isNotEmpty) {
               showDialog(
                   context: context,
                   builder: (BuildContext context) {
                     return AlertDialog(
-                      title: const Text('Basic dialog title'),
+                      title: const Text('Synchronize'),
                       content: const Text('Do you want to synchronize'
                           ' data on your device with cloud? '
                           ' If not, all of your local data will be lost'),
@@ -84,6 +84,7 @@ class _LoginForm extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        automaticallyImplyLeading: false,
         title: const Text('Login'),
         centerTitle: true,
       ),
@@ -91,12 +92,12 @@ class _LoginForm extends StatelessWidget {
         alignment: Alignment.center,
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
-          children: [
+          children: const [
             _LoginEmail(),
             _LoginPassword(),
             _SubmitButton(),
-            const _CreateAccountButton(),
-            const _ContinueWithoutLogginIn()
+            _CreateAccountButton(),
+            _ContinueWithoutLogginIn()
           ],
         ),
       ),

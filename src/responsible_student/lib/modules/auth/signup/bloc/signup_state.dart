@@ -7,7 +7,7 @@ enum SignupStatus {
 }
 
 class SignupState extends Equatable {
-  SignupState({
+  const SignupState({
     this.email = '',
     this.password = '',
     this.message = '',
