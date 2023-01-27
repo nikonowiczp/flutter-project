@@ -87,6 +87,7 @@ jobs:
         uses: wzieba/AppCenter-Github-Action@v1
         with:
           appName: nikonowiczp/Responsible-Student
+          group: Testers
           token: ${{ secrets.APP_CENTER_TOKEN_ANDROID }}
           file: src/responsible_student/build/app/outputs/flutter-apk/app-release.apk
           buildNumber: ${{ github.run_number }}
