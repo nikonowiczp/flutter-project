@@ -76,12 +76,12 @@ jobs:
 
       - name: Build app
         working-directory: ./src/responsible_student
-        run: flutter build apk --verbose --build-name 1.0.${{ github.run_number }} --build-number ${{ github.run_number }}
+        run: flutter build --verbose --build-name 1.0.${{ github.run_number }} --build-number ${{ github.run_number }}
 
       - uses: actions/upload-artifact@v3
         with:
           name: app-release.apk
-          path: src/responsible_student/build/app/outputs/flutter-apk/app-release.apk
+          path: src/responsible_student/build/app/outputs/flutter-apk/app.apk
 
       - name: Upload artifact to App Center
         uses: wzieba/AppCenter-Github-Action@v1
@@ -89,6 +89,6 @@ jobs:
           appName: nikonowiczp/Responsible-Student
           group: Testers
           token: ${{ secrets.APP_CENTER_TOKEN_ANDROID }}
-          file: src/responsible_student/build/app/outputs/flutter-apk/app-release.apk
+          file: src/responsible_student/build/app/outputs/flutter-apk/app.apk
           buildNumber: ${{ github.run_number }}
           debug: true
