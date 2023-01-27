@@ -48,17 +48,16 @@ class _LoginForm extends StatelessWidget {
         title: const Text('Login'),
         centerTitle: true,
       ),
-      body: Center(
+      body: OverflowBox(
+        alignment: Alignment.center,
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             _LoginEmail(),
-            const SizedBox(height: 30.0),
             _LoginPassword(),
-            const SizedBox(height: 30.0),
             _SubmitButton(),
-            const SizedBox(height: 30.0),
             const _CreateAccountButton(),
+            const _ContinueWithoutLogginIn()
           ],
         ),
       ),
@@ -134,7 +133,7 @@ class _CreateAccountButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return TextButton(
       onPressed: () {
-        Navigator.push(
+        Navigator.pushReplacement(
           context,
           MaterialPageRoute(
             builder: (context) => const SignupPage(),
@@ -142,6 +141,22 @@ class _CreateAccountButton extends StatelessWidget {
         );
       },
       child: const Text('Create Account'),
+    );
+  }
+}
+
+class _ContinueWithoutLogginIn extends StatelessWidget {
+  const _ContinueWithoutLogginIn({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return TextButton(
+      onPressed: () {
+        BlocProvider.of<UserDataBloc>(context)
+            .add(const UserDataSetShouldNotLogInEvent());
+        Navigator.of(context).pushReplacement(HomePage.route());
+      },
+      child: const Text('Continue without logging in'),
     );
   }
 }

@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:equatable/equatable.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';
 import 'package:responsible_student/modules/auth/auth_service/models/user_entity.dart';
@@ -11,7 +12,7 @@ part 'user_data_event.dart';
 part 'user_data_state.dart';
 
 class UserDataBloc extends HydratedBloc<UserDataEvent, UserDataState> {
-  UserDataBloc(this._authService)
+  UserDataBloc(this._authService, this._firestore)
       : super(UserDataState(
             entity: UserEntity.empty(), tasks: const <String, Task>{})) {
     on<UserDataAddTasksEvent>(_onUserDataAddTasksEvent);
@@ -25,13 +26,27 @@ class UserDataBloc extends HydratedBloc<UserDataEvent, UserDataState> {
       emit(state.copyWith(shouldBeLoggedIn: true));
     });
     on<UserDataSetShouldNotLogInEvent>((event, emit) {
-      emit(state.copyWith(shouldBeLoggedIn: false));
+      emit(state.copyWith(shouldBeLoggedIn: false, entity: UserEntity.empty()));
     });
-
     print('Constructor was called');
     emit(state.copyWith(entity: _authService.getCurrentUser()));
+    if (state.isLoggedIn) _synchronizeTasksWithFirestore();
   }
   final AuthService _authService;
+  final FirebaseFirestore _firestore;
+
+  _synchronizeTasksWithFirestore() async {
+    print('_synchronizeTasksWithFirestore');
+    var userInfo = await _firestore
+        .collection('/task')
+        .where('userUid', isEqualTo: '4KPXfRtPh3Xqie5RiRkqr1iZ5H13')
+        .get()
+        .then((value) => value.docs.forEach((element) {
+              print(element.data());
+            }));
+    print('After query');
+  }
+
   _onUserDataAddTasksEvent(
       UserDataAddTasksEvent event, Emitter<UserDataState> emit) {
     var newMap = Map<String, Task>.of(state.tasks);

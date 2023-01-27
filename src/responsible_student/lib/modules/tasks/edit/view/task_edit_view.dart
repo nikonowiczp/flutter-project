@@ -162,7 +162,7 @@ class _nextReminderInput extends StatelessWidget {
             enabledBorder: _renderBorder(_hasError()),
             focusedBorder: _renderBorder(_hasError()),
             icon: const Icon(Icons.calendar_today),
-            labelText: "Enter next reminder date"),
+            labelText: "Enter next reminder date or let algorithm decide"),
         readOnly: true,
         onTap: () async {
           DateTime? pickedDate = await showDatePicker(
@@ -203,7 +203,6 @@ class _hoursInput extends StatelessWidget {
       TextField(
         controller: bloc.hours,
         onChanged: (value) {
-          print(value);
           bloc.add(TaskEditHoursChanged(double.parse(value)));
         },
         keyboardType: TextInputType.number,
@@ -219,7 +218,7 @@ class _hoursInput extends StatelessWidget {
           }),
         ],
         decoration: InputDecoration(
-            hintText: 'Total hours',
+            hintText: 'Total hours needed to finish task',
             labelStyle: TextStyle(
               color: _hasError() ? Colors.red : Colors.black,
             ),
@@ -328,7 +327,7 @@ class _hoursPerReminderDoneInput extends StatelessWidget {
           }),
         ],
         decoration: InputDecoration(
-            hintText: 'Hours per reminder',
+            hintText: 'Hours per day',
             labelStyle: TextStyle(
               color: _hasError() ? Colors.red : Colors.black,
             ),
@@ -337,7 +336,7 @@ class _hoursPerReminderDoneInput extends StatelessWidget {
             ),
             enabledBorder: _renderBorder(_hasError()),
             focusedBorder: _renderBorder(_hasError()),
-            labelText: "Enter hours per reminder"),
+            labelText: "Enter hours per day"),
       ),
       if (_hasError()) ...[
         const SizedBox(height: 5),

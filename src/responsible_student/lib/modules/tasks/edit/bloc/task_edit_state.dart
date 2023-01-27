@@ -83,7 +83,13 @@ class TaskEditState extends Equatable {
 
   Task getTask() {
     return Task(
-        id, deadline, hours, hoursDone, hoursPerReminder, name, nextReminder);
+        id,
+        deadline,
+        double.parse(hours.toStringAsFixed(1)),
+        double.parse(hoursDone.toStringAsFixed(1)),
+        double.parse(hoursPerReminder.toStringAsFixed(1)),
+        name,
+        nextReminder);
   }
 
   bool canSubmit() {

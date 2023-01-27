@@ -14,7 +14,6 @@ class FirebaseAuthService implements AuthService {
     if (user == null) {
       return UserEntity.empty();
     }
-
     var splittedName = ['Name ', 'LastName'];
     if (user.displayName != null) {
       splittedName = user.displayName!.split(' ');

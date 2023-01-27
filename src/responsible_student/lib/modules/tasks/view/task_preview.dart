@@ -17,7 +17,9 @@ class TaskPreview extends StatelessWidget {
         children: [
           Expanded(child: Text(task.name)),
           Expanded(child: Text(DateFormat.yMd().format(task.nextReminder))),
-          Expanded(child: Text('${task.hours - task.hoursDone} hours left')),
+          Expanded(
+              child: Text(
+                  '${(task.hours - task.hoursDone).toStringAsFixed(1)} hours left')),
           Expanded(
             child: ElevatedButton(
                 onPressed: () {

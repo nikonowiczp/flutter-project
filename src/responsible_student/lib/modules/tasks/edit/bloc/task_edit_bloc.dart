@@ -214,22 +214,25 @@ class TaskEditBloc extends Bloc<TaskEditEvent, TaskEditState> {
       double hours, double hoursDone, double hoursPerReminder) {
     DateTime calculatedNextReminder = DateTime.now();
     String error = '';
-    double hoursLeft = hours - hoursDone;
-    // To get rid of time - maybe unnecessary
-    DateTime nowOnlyDate =
-        DateFormat.yMd().parse(DateFormat.yMd().format(DateTime.now()));
-    int daysLeft = deadline.difference(DateTime.now()).inDays + 1;
+    try {
+      double hoursLeft = hours - hoursDone;
+      // To get rid of time - maybe unnecessary
+      DateTime nowOnlyDate =
+          DateFormat.yMd().parse(DateFormat.yMd().format(DateTime.now()));
+      int daysLeft = deadline.difference(DateTime.now()).inDays + 1;
 
-    double daysOfWork = hoursLeft / hoursPerReminder;
-    if (daysOfWork > daysLeft) {
-      error = 'Not enough time before deadline';
+      double daysOfWork = hoursLeft / hoursPerReminder;
+      if (daysOfWork > daysLeft) {
+        error = 'Not enough time before deadline';
+        return Tuple2<DateTime, String>(calculatedNextReminder, error);
+      }
+      double daysBetweenDaysOfWork = daysLeft.toDouble() / daysOfWork;
+      int daysUntilNextReminder = daysBetweenDaysOfWork.floor();
+
+      calculatedNextReminder =
+          nowOnlyDate.add(Duration(days: daysUntilNextReminder));
       return Tuple2<DateTime, String>(calculatedNextReminder, error);
-    }
-    double daysBetweenDaysOfWork = daysLeft.toDouble() / daysOfWork;
-    int daysUntilNextReminder = daysBetweenDaysOfWork.floor();
-
-    calculatedNextReminder =
-        nowOnlyDate.add(Duration(days: daysUntilNextReminder));
+    } catch (e) {}
     return Tuple2<DateTime, String>(calculatedNextReminder, error);
   }
 }

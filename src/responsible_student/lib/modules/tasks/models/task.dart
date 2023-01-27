@@ -12,8 +12,9 @@ class Task extends Equatable {
   final double hoursPerReminder;
   final String name;
   final DateTime nextReminder;
+  final DateTime dateModified = DateTime.now();
 
-  const Task(this.id, this.deadline, this.hours, this.hoursDone,
+  Task(this.id, this.deadline, this.hours, this.hoursDone,
       this.hoursPerReminder, this.name, this.nextReminder);
   @override
   List<Object?> get props =>
@@ -22,7 +23,7 @@ class Task extends Equatable {
   factory Task.fromJson(Map<String, dynamic> json) => _$TaskFromJson(json);
   factory Task.newTask() {
     var uuid = Uuid();
-    return Task(uuid.v1(), DateTime.now(), 0, 0, 0, '', DateTime.now());
+    return Task(uuid.v1(), DateTime.now(), 0, 0, 0, 'New Task', DateTime.now());
   }
   Map<String, dynamic> toJson() => _$TaskToJson(this);
 }

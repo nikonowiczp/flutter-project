@@ -29,6 +29,13 @@
             {
               "client_id": "386793433837-ecumk50ua1c6f20386mku7hnd5cgd0k6.apps.googleusercontent.com",
               "client_type": 3
+            },
+            {
+              "client_id": "386793433837-pbkv670tqdurfk7dkbh80kpctgbbjuhc.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.responsibleStudent"
+              }
             }
           ]
         }

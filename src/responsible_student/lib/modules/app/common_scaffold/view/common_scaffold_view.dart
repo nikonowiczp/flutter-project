@@ -1,8 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:responsible_student/modules/app/common_scaffold/bloc/common_scaffold_bloc.dart';
-import 'package:responsible_student/modules/auth/auth_service/service/auth_service.dart';
-import 'package:responsible_student/modules/auth/login/bloc/login_bloc.dart';
 import 'package:responsible_student/modules/auth/login/view/login_page.dart';
 import 'package:responsible_student/modules/user_data/bloc/user_data_bloc.dart';
 
@@ -19,11 +16,12 @@ class UserHeaderView extends StatelessWidget {
               title: Text(title),
               actions: state.entity.email == ''
                   ? <Widget>[
-                      TextButton(
+                      ElevatedButton(
                         onPressed: () {
                           BlocProvider.of<UserDataBloc>(context)
-                              .add(const UserDataSetShouldLogInEvent());
-                          Navigator.of(context).push(LoginPage.route());
+                              .add(const UserDataLoggedOutEvent());
+                          Navigator.of(context)
+                              .pushReplacement(LoginPage.route());
                         },
                         child: const Text('Log in'),
                       )
@@ -32,7 +30,7 @@ class UserHeaderView extends StatelessWidget {
                       Center(
                         child: Text(state.entity.email),
                       ),
-                      TextButton(
+                      ElevatedButton(
                         onPressed: () {
                           BlocProvider.of<UserDataBloc>(context)
                               .add(const UserDataLoggedOutEvent());
@@ -42,9 +40,6 @@ class UserHeaderView extends StatelessWidget {
                         child: const Text('Log out'),
                       )
                     ],
-              flexibleSpace: Container(
-                color: Colors.orange,
-              ),
             ),
             body: child,
           )),

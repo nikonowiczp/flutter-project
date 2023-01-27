@@ -5,7 +5,6 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';
 import 'package:path_provider/path_provider.dart';
-import 'package:responsible_student/modules/app/common_scaffold/bloc/common_scaffold_bloc.dart';
 import 'package:responsible_student/modules/app/home_page/home_page_view.dart';
 import 'package:responsible_student/modules/auth/auth_service/models/user_entity.dart';
 import 'package:responsible_student/modules/auth/auth_service/service/auth_service.dart';
@@ -14,11 +13,10 @@ import 'package:responsible_student/modules/auth/login/view/login_page.dart';
 import 'package:responsible_student/modules/auth/signup/view/signup_page.dart';
 import 'package:responsible_student/modules/user_data/bloc/user_data_bloc.dart';
 import 'firebase_options.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 void main() async {
-  // Bug with hot realod apparently
   WidgetsFlutterBinding.ensureInitialized();
-  //FlutterServicesBinding.ensureInitialized();
   HydratedBloc.storage = await HydratedStorage.build(
     storageDirectory: kIsWeb
         ? HydratedStorage.webStorageDirectory
@@ -50,20 +48,12 @@ class ResponsibleStudentApp extends StatelessWidget {
               BlocProvider<UserDataBloc>(
                   lazy: false,
                   create: (context) => UserDataBloc(
-                      RepositoryProvider.of<AuthService>(context))),
-              BlocProvider<CommomScaffoldBloc>(
-                create: (context) => CommomScaffoldBloc(),
-                lazy: false,
-              )
+                      RepositoryProvider.of<AuthService>(context),
+                      FirebaseFirestore.instance)),
             ],
             child: const MaterialApp(
               title: 'Responsible Student',
               home: HomePage(),
-              // routes: {
-              //   '/': (context) => const HomePage(),
-              //   '/login': (context) => const LoginPage(),
-              //   '/signin': (context) => const SignupPage(),
-              // },
             )));
   }
 }
