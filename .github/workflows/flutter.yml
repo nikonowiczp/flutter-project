@@ -1,0 +1,128 @@
+name: Flutter
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+
+jobs:
+  check:
+    runs-on: ${{ matrix.os }}
+    outputs:
+      run_job: ${{ steps.check_files.outputs.run_job }}
+
+    strategy:
+      matrix:
+        os: [ubuntu-latest]
+        include:
+          - os: ubuntu-latest
+            flutter_path: /opt/hostedtoolcache/flutter
+      fail-fast: false
+
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - name: Get changed files
+        id: changed-files
+        uses: tj-actions/changed-files@v19
+        with:
+          files: src/mobile/**/*
+
+      - name: Set modified flag
+        id: check_files
+        run: |
+          echo "::set-output name=run_job::"${{ steps.changed-files.outputs.any_modified }}
+  setup:
+    runs-on: ${{ matrix.os }}
+    needs: [check]
+    if: ${{ github.event_name == 'workflow_dispatch' || needs.check.outputs.run_job == 'true' }}
+
+    strategy:
+      matrix:
+        os: [ubuntu-latest]
+        include:
+          - os: ubuntu-latest
+            flutter_path: /opt/hostedtoolcache/flutter
+      fail-fast: false
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Cache Flutter dependencies
+        uses: actions/cache@v3
+        with:
+          path: ${{ matrix.flutter_path }}
+          key: ${{ runner.os }}-flutter
+
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: "3.3.0"
+          channel: "stable"
+
+  build:
+    runs-on: ${{ matrix.os }}
+    needs: [check, setup]
+    if: ${{ github.event_name == 'workflow_dispatch' || needs.check.outputs.run_job == 'true' }}
+
+    strategy:
+      matrix:
+        os: [ubuntu-latest]
+        include:
+          - os: ubuntu-latest
+            flutter_path: /opt/hostedtoolcache/flutter
+      fail-fast: false
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Cache Flutter
+        id: cache-flutter
+        uses: actions/cache@v3
+        with:
+          path: ${{ matrix.flutter_path }}
+          key: ${{ runner.os }}-flutter
+
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: "3.3.0"
+          channel: "stable"
+
+      - name: Install dependencies
+        working-directory: ./src/mobile
+        run: flutter pub get
+
+      # - name: Verify formatting
+      #   working-directory: ./mobile
+      #   run: flutter format --output=none --set-exit-if-changed .
+
+      - name: Analyze project source
+        working-directory: ./src/mobile
+        run: flutter analyze --verbose
+
+      # Enable when there are tests
+      # - name: Run tests
+      #   working-directory: ./mobile
+      #   run: flutter test
+
+      - name: Build app
+        working-directory: ./src/mobile
+        run: flutter build apk --verbose --flavor tst -t lib/main_test.dart --build-name 1.0.${{ github.run_number }} --build-number ${{ github.run_number }}
+
+      - uses: actions/upload-artifact@v3
+        with:
+          name: app-release.apk
+          path: src/mobile/build/app/outputs/flutter-apk/app-tst-release.apk
+
+      - name: Upload artifact to App Center
+        uses: wzieba/AppCenter-Github-Action@v1
+        with:
+          appName: PiotrRogulski/HelpPets-1
+          token: ${{ secrets.APP_CENTER_TOKEN_ANDROID }}
+          group: Testers
+          file: src/mobile/build/app/outputs/flutter-apk/app-tst-release.apk
+          buildNumber: ${{ github.run_number }}
+          notifyTesters: true
+          debug: false
+          gitReleaseNotes: true
