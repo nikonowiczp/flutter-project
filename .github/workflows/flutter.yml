@@ -81,13 +81,13 @@ jobs:
       - uses: actions/upload-artifact@v3
         with:
           name: app-release.apk
-          path: src/responsible_student/build/app/outputs/flutter-apk'/app.apk
+          path: src/responsible_student/build/app/outputs/flutter-apk/app-release.apk
 
       - name: Upload artifact to App Center
         uses: wzieba/AppCenter-Github-Action@v1
         with:
           appName: nikonowiczp/Responsible-Student
           token: ${{ secrets.APP_CENTER_TOKEN_ANDROID }}
-          file: src/responsible_student/build/app/outputs/flutter-apk'/app.apk
+          file: src/responsible_student/build/app/outputs/flutter-apk/app-release.apk
           buildNumber: ${{ github.run_number }}
           debug: true
