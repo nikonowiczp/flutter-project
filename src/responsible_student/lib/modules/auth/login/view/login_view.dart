@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_signin_button/flutter_signin_button.dart';
 import 'package:responsible_student/modules/app/home_page/home_page_view.dart';
 import 'package:responsible_student/modules/auth/login/bloc/login_bloc.dart';
 import 'package:responsible_student/modules/auth/signup/view/signup_page.dart';
@@ -62,6 +63,7 @@ class LoginView extends StatelessWidget {
                 content: Text(state.message),
               ),
             );
+            BlocProvider.of<LoginBloc>(context).add(ClearErrorEvent());
           }
         },
         child: BlocListener<UserDataBloc, UserDataState>(
@@ -92,12 +94,25 @@ class _LoginForm extends StatelessWidget {
         alignment: Alignment.center,
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
-          children: const [
-            _LoginEmail(),
-            _LoginPassword(),
-            _SubmitButton(),
-            _CreateAccountButton(),
-            _ContinueWithoutLogginIn()
+          children: [
+            const _LoginEmail(),
+            const _LoginPassword(),
+            const _SubmitButton(),
+            const _CreateAccountButton(),
+            SignInButton(
+              Buttons.Google,
+              onPressed: () {
+                BlocProvider.of<LoginBloc>(context).add(LoginWithGmailEvent());
+              },
+            ),
+            SignInButton(
+              Buttons.Facebook,
+              onPressed: () {
+                BlocProvider.of<LoginBloc>(context)
+                    .add(LoginWithFacebookEvent());
+              },
+            ),
+            const _ContinueWithoutLogginIn(),
           ],
         ),
       ),

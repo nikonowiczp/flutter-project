@@ -17,13 +17,16 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
     on<LoginButtonPressedEvent>(_handleLoginWithEmailAndPasswordEvent);
     on<LoginEmailChangedEvent>(_handleLoginEmailChangedEvent);
     on<LoginPasswordChangedEvent>(_handleLoginPasswordChangedEvent);
-    on<LoggedOutEvent>(_handleLoggetOutEvent);
+    on<LoggedOutEvent>(_handleLoggedOutEvent);
+    on<LoginWithGmailEvent>(_handleLoginWithGmail);
+    on<LoginWithFacebookEvent>(_onLoginWithFacebookEvent);
+    on<ClearErrorEvent>(_onClearErrorEvent);
   }
   late StreamSubscription authServiceBlocSubscription;
 
   final AuthService _authService;
 
-  Future<void> _handleLoggetOutEvent(
+  Future<void> _handleLoggedOutEvent(
     LoggedOutEvent event,
     Emitter<LoginState> emit,
   ) async {
@@ -62,5 +65,33 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
     } catch (e) {
       emit(state.copyWith(message: e.toString(), status: LoginStatus.failure));
     }
+  }
+
+  Future<void> _handleLoginWithGmail(
+      LoginWithGmailEvent event, Emitter<LoginState> emit) async {
+    try {
+      var credential = await _authService.signInWithGoogle();
+      emit(state.copyWith(message: 'Success', status: LoginStatus.success));
+    } catch (e) {
+      print('Login with gmail error');
+      print(e);
+      emit(state.copyWith(message: e.toString(), status: LoginStatus.failure));
+    }
+  }
+
+  Future<void> _onLoginWithFacebookEvent(
+      LoginWithFacebookEvent event, Emitter<LoginState> emit) async {
+    try {
+      var credential = await _authService.signInWithFacebook();
+      emit(state.copyWith(message: 'Success', status: LoginStatus.success));
+    } catch (e) {
+      print('Login with facebook error');
+      print(e);
+      emit(state.copyWith(message: e.toString(), status: LoginStatus.failure));
+    }
+  }
+
+  _onClearErrorEvent(ClearErrorEvent event, Emitter<LoginState> emit) {
+    emit(state.copyWith(message: ''));
   }
 }

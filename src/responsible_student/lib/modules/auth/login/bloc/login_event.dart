@@ -32,3 +32,9 @@ class LoginPasswordChangedEvent extends LoginEvent {
 class LoggedOutEvent extends LoginEvent {
   const LoggedOutEvent();
 }
+
+class LoginWithGmailEvent extends LoginEvent {}
+
+class LoginWithFacebookEvent extends LoginEvent {}
+
+class ClearErrorEvent extends LoginEvent {}

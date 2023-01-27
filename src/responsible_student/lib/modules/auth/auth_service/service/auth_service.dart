@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:responsible_student/modules/auth/auth_service/models/user_entity.dart';
 
 abstract class AuthService {
@@ -14,4 +15,6 @@ abstract class AuthService {
   UserEntity getCurrentUser();
 
   Future<void> signOut();
+  Future<UserCredential> signInWithGoogle();
+  Future<UserCredential> signInWithFacebook();
 }
