@@ -121,6 +121,7 @@ class TaskEditBloc extends Bloc<TaskEditEvent, TaskEditState> {
     if (hoursPerReminderError.isEmpty) {
       hoursPerReminderError = calculatedNextReminder.item2;
     }
+    nextReminder.text = DateFormat.yMd().format(calculatedNextReminder.item1);
     emit(state.copyWith(
       hoursPerReminder: event.hoursPerReminder,
       hoursPerReminderError: hoursPerReminderError,
@@ -188,6 +189,9 @@ class TaskEditBloc extends Bloc<TaskEditEvent, TaskEditState> {
 
   static String _getHoursPerReminderError(
       double hoursPerReminder, double hours) {
+    if (hoursPerReminder <= 0) {
+      return 'Hours per reminder should be greater than 0';
+    }
     if (hours < hoursPerReminder) {
       return 'Hours per reminder should be smaller that total hours';
     }
@@ -206,7 +210,7 @@ class TaskEditBloc extends Bloc<TaskEditEvent, TaskEditState> {
 
   static String _getNextReminderError(
       DateTime nextReminder, DateTime deadline) {
-    if (!DateTime.now().isAfter(nextReminder) &&
+    if (nextReminder.isBefore(DateTime.now()) &&
         // I am sincerely sorry for this.
         DateFormat.yMd().format(DateTime.now()) !=
             DateFormat.yMd().format(nextReminder)) {

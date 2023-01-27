@@ -20,7 +20,7 @@ class UserHeaderView extends StatelessWidget {
                       ElevatedButton(
                         onPressed: () {
                           BlocProvider.of<UserDataBloc>(context)
-                              .add(const UserDataLoggedOutEvent());
+                              .add(const UserDataSetShouldLogInEvent());
                           Navigator.of(context)
                               .pushReplacement(LoginPage.route());
                         },

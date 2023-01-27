@@ -46,8 +46,8 @@ class UserDataBloc extends HydratedBloc<UserDataEvent, UserDataState> {
   }
 
   _onUserDataLoggedOutEvent(
-      UserDataLoggedOutEvent event, Emitter<UserDataState> emit) {
-    _authService.signOut();
+      UserDataLoggedOutEvent event, Emitter<UserDataState> emit) async {
+    await _authService.signOut();
     emit(state.copyWith(
         entity: _authService.getCurrentUser(), isLoggedIn: false));
   }
